@@ -337,7 +337,8 @@ function renderMatch(m) {
             <div class="row"><span>${a}</span><span class="label">${esc(label)}</span><span>${b}</span></div>
             <div class="bar"><span style="width:${a + b === 0 ? 50 : (a / (a + b)) * 100}%"></span></div>
           </div>`).join("")
-      : `<p class="empty">Stats appear once the match starts.</p>`;
+       : `<p class="empty">${m.status === "NS" ? "Stats appear once the match starts." : "Stats are not available for this match."}</p>`;
+
 
   return `
     <button class="back" id="back">‹ All matches</button>
