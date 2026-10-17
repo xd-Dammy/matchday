@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -28,168 +29,147 @@
     }
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+- { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
-    background: var(--chalk);
-    color: var(--ink);
-    line-height: 1.4;
-    padding-bottom: 72px;
+  font-family: “Avenir Next”, “Segoe UI”, system-ui, sans-serif;
+  background: var(–chalk);
+  color: var(–ink);
+  line-height: 1.4;
+  padding-bottom: 32px;
   }
   button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; }
-  button:focus-visible { outline: 2px solid var(--pitch); outline-offset: 2px; }
+  button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(–pitch); outline-offset: 2px; }
 
-  header {
-    background: var(--pitch);
-    color: #fff;
-    padding: 18px 16px 14px;
-    background-image: radial-gradient(circle at 100% 0, transparent 46px, rgba(255,255,255,.35) 47px, rgba(255,255,255,.35) 49px, transparent 50px);
-  }
-  header h1 { font-size: 1.5rem; letter-spacing: -0.02em; }
-  header p { font-size: .85rem; opacity: .85; }
-  #live-badge { margin-top: 4px; font-weight: 700; opacity: 1; }
+header {
+background: var(–pitch);
+color: #fff;
+padding: 18px 16px 14px;
+background-image: radial-gradient(circle at 100% 0, transparent 46px, rgba(255,255,255,.35) 47px, rgba(255,255,255,.35) 49px, transparent 50px);
+}
+header h1 { font-size: 1.5rem; letter-spacing: -0.02em; }
+header p { font-size: .85rem; opacity: .85; }
+#live-badge { margin-top: 4px; font-weight: 700; opacity: 1; min-height: 1.2em; }
 
-  main { max-width: 640px; margin: 0 auto; padding: 12px; }
+main { max-width: 640px; margin: 0 auto; padding: 12px; }
 
-  .notice { background: var(--paper); border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; font-size: .8rem; color: var(--muted); margin-bottom: 10px; }
+/* –– Controls (search, date, filters) –– */
+.controls { position: sticky; top: 0; z-index: 5; background: var(–chalk); padding: 4px 0 10px; }
+.controls input[type=“search”], .controls select {
+width: 100%; font: inherit; font-size: 16px; /* 16px stops iPhone zooming in */
+padding: 11px 14px; border-radius: 10px; border: 1px solid var(–line);
+background: var(–paper); color: var(–ink);
+}
+.controls .row { display: flex; gap: 8px; margin-top: 8px; }
+.controls .row > * { flex: 1; }
+.seg { display: flex; border: 1px solid var(–line); border-radius: 10px; overflow: hidden; background: var(–paper); }
+.seg button { flex: 1; padding: 9px 4px; font-size: .85rem; font-weight: 600; color: var(–muted); }
+.seg button[aria-pressed=“true”] { background: var(–ink); color: var(–chalk); }
+.toggle {
+padding: 10px 12px; border-radius: 10px; border: 1px solid var(–line);
+background: var(–paper); font-size: .85rem; font-weight: 600; text-align: center;
+}
+.toggle[aria-pressed=“true”] { background: var(–live); border-color: var(–live); color: #fff; }
 
-  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px; }
-  .chip {
-    white-space: nowrap; padding: 7px 14px; border-radius: 999px;
-    border: 1px solid var(--line); background: var(--paper); font-size: .85rem;
-  }
-  .chip[aria-pressed="true"] { background: var(--ink); color: var(--chalk); border-color: var(--ink); }
+.notice { background: var(–paper); border: 1px dashed var(–line); border-radius: 8px; padding: 10px 12px; font-size: .85rem; color: var(–muted); margin-bottom: 10px; }
 
-  .league { margin-bottom: 18px; }
-  .league h2 { font-size: .95rem; margin: 0 4px 6px; color: var(--muted); font-weight: 600; }
+.league { margin-bottom: 18px; }
+.league h2 { font-size: .95rem; margin: 0 4px 6px; color: var(–muted); font-weight: 600; }
 
-  .match {
-    display: grid; grid-template-columns: 54px 1fr 28px; gap: 8px; align-items: center;
-    width: 100%; text-align: left; background: var(--paper);
-    padding: 12px; border-bottom: 1px solid var(--line);
-  }
-  .match:first-of-type { border-radius: 10px 10px 0 0; }
-  .match:last-of-type { border-radius: 0 0 10px 10px; border-bottom: 0; }
-  .match:only-of-type { border-radius: 10px; }
-  .status { font-size: .8rem; font-weight: 700; color: var(--muted); }
-  .status.live { color: var(--live); }
-  .status.live::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--live); margin-right: 5px; animation: pulse 1.4s infinite; }
-  @keyframes pulse { 50% { opacity: .25; } }
-  @media (prefers-reduced-motion: reduce) { .status.live::before { animation: none; } }
-  .teams div { padding: 2px 0; }
-  .score div { font-variant-numeric: tabular-nums; font-weight: 800; text-align: right; padding: 2px 0; }
+.match {
+display: grid; grid-template-columns: 54px 1fr 28px; gap: 8px; align-items: center;
+width: 100%; text-align: left; background: var(–paper);
+padding: 12px; border-bottom: 1px solid var(–line);
+}
+.match:first-of-type { border-radius: 10px 10px 0 0; }
+.match:last-of-type { border-radius: 0 0 10px 10px; border-bottom: 0; }
+.match:only-of-type { border-radius: 10px; }
+.status { font-size: .8rem; font-weight: 700; color: var(–muted); }
+.status.live { color: var(–live); }
+.status.live::before { content: “”; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(–live); margin-right: 5px; animation: pulse 1.4s infinite; }
+@keyframes pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .status.live::before { animation: none; } }
+.teams div { padding: 2px 0; }
+.score div { font-variant-numeric: tabular-nums; font-weight: 800; text-align: right; padding: 2px 0; }
 
-  .back { padding: 8px 4px; color: var(--pitch); font-weight: 600; }
-  .card { background: var(--paper); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
-  .scoreboard { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; text-align: center; }
-  .scoreboard .big { font-size: 2.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .scoreboard .tname { font-weight: 700; }
-  .card h3 { font-size: .95rem; margin-bottom: 10px; }
+.back { padding: 8px 4px; color: var(–pitch); font-weight: 600; }
+.card { background: var(–paper); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+.scoreboard { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; text-align: center; }
+.scoreboard .big { font-size: 2.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+.scoreboard .tname { font-weight: 700; }
+.card h3 { font-size: .95rem; margin-bottom: 10px; }
 
-  .event { display: grid; grid-template-columns: 40px 1fr; padding: 8px 0; border-bottom: 1px solid var(--line); gap: 8px; }
-  .event:last-child { border-bottom: 0; }
-  .event .min { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
-  .event .team { color: var(--muted); }
+.event { display: grid; grid-template-columns: 40px 1fr; padding: 8px 0; border-bottom: 1px solid var(–line); gap: 8px; }
+.event:last-child { border-bottom: 0; }
+.event .min { font-weight: 700; color: var(–muted); font-variant-numeric: tabular-nums; }
+.event .team { color: var(–muted); }
 
-  .stat { margin: 12px 0; }
-  .stat .row { display: flex; justify-content: space-between; font-size: .85rem; font-weight: 600; }
-  .stat .label { color: var(--muted); font-weight: 400; }
-  .bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--line); margin-top: 4px; }
-  .bar span { background: var(--pitch); }
+.stat { margin: 12px 0; }
+.stat .row { display: flex; justify-content: space-between; font-size: .85rem; font-weight: 600; }
+.stat .label { color: var(–muted); font-weight: 400; }
+.bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(–line); margin-top: 4px; }
+.bar span { background: var(–pitch); }
 
-  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
-  th, td { padding: 8px 4px; text-align: center; font-variant-numeric: tabular-nums; }
-  th { color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--line); }
-  td:nth-child(2), th:nth-child(2) { text-align: left; }
-  tr.cl td:first-child { box-shadow: inset 3px 0 0 var(--pitch); }
-  td.pts { font-weight: 800; }
-
-  .empty { text-align: center; color: var(--muted); padding: 40px 12px; }
-
-  nav {
-    position: fixed; bottom: 0; left: 0; right: 0; display: flex;
-    background: var(--paper); border-top: 1px solid var(--line);
-  }
-  nav button { flex: 1; padding: 16px 0; font-weight: 600; color: var(--muted); }
-  nav button[aria-current="page"] { color: var(--pitch); box-shadow: inset 0 3px 0 var(--pitch); }
-  .updated { text-align: center; color: var(--muted); font-size: .75rem; padding: 6px; }
+.empty { text-align: center; color: var(–muted); padding: 40px 12px; }
+.updated { text-align: center; color: var(–muted); font-size: .75rem; padding: 6px; }
 </style>
+
 </head>
 <body>
 
 <header>
   <h1>Matchday</h1>
-  <p>Live scores, fixtures and tables</p>
+  <p>Live scores and fixtures</p>
   <p id="live-badge"></p>
 </header>
 
-<main id="app"></main>
+<main>
+  <!-- The controls are written ONCE here and never redrawn.
+       That is why typing in the search box does not lose focus,
+       and why the league dropdown does not jump back to the start. -->
+  <div class="controls" id="controls">
+    <input id="search" type="search" placeholder="Search team or league" autocomplete="off">
+    <div class="row">
+      <div class="seg" id="dates">
+        <button data-off="-1" aria-pressed="false">Yesterday</button>
+        <button data-off="0" aria-pressed="true">Today</button>
+        <button data-off="1" aria-pressed="false">Tomorrow</button>
+      </div>
+    </div>
+    <div class="row">
+      <button class="toggle" id="live-toggle" aria-pressed="false">Live only</button>
+      <select id="league-select" aria-label="League"><option value="All">All leagues</option></select>
+    </div>
+  </div>
 
-<nav style="display: none;">
-  <button id="tab-scores" aria-current="page">Scores</button>
-  <button id="tab-tables">Tables</button>
-</nav>
+  <div id="app"></div>
+  <p class="updated" id="updated"></p>
+</main>
 
 <script>
 /* =====================================================
-   PART 1: DEMO DATA
-   Used ONLY when the backend is not available yet (for example
-   before the API key is added). Same shape as the real data.
-   ===================================================== */
-const demoMatches = [
-  { id: 1, league: "Premier League", home: "Arsenal", away: "Chelsea", hs: 2, as: 1, status: "LIVE", minute: 67,
-    events: [
-      { min: 12, type: "goal", team: "Arsenal", player: "B. Saka" },
-      { min: 34, type: "goal", team: "Chelsea", player: "C. Palmer" },
-      { min: 41, type: "yellow", team: "Chelsea", player: "M. Caicedo" },
-      { min: 58, type: "goal", team: "Arsenal", player: "K. Havertz" },
-    ],
-    stats: { Possession: [58, 42], Shots: [11, 7], "Shots on target": [5, 3], Corners: [6, 2] } },
-  { id: 2, league: "Premier League", home: "Liverpool", away: "Man City", hs: 0, as: 0, status: "LIVE", minute: 23,
-    events: [ { min: 19, type: "yellow", team: "Man City", player: "Rodri" } ],
-    stats: { Possession: [47, 53], Shots: [3, 4], "Shots on target": [1, 1], Corners: [2, 3] } },
-  { id: 3, league: "Premier League", home: "Spurs", away: "Newcastle", hs: 0, as: 0, status: "NS", time: "20:00",
-    events: [], stats: null },
-  { id: 4, league: "La Liga", home: "Real Madrid", away: "Sevilla", hs: 3, as: 1, status: "FT",
-    events: [
-      { min: 9, type: "goal", team: "Real Madrid", player: "Vinícius Jr." },
-      { min: 27, type: "goal", team: "Sevilla", player: "Y. En-Nesyri" },
-      { min: 55, type: "goal", team: "Real Madrid", player: "J. Bellingham" },
-      { min: 82, type: "goal", team: "Real Madrid", player: "Rodrygo" },
-    ],
-    stats: { Possession: [64, 36], Shots: [16, 6], "Shots on target": [8, 2], Corners: [7, 3] } },
-  { id: 5, league: "La Liga", home: "Barcelona", away: "Valencia", hs: 0, as: 0, status: "NS", time: "21:00",
-    events: [], stats: null },
-];
-
-const demoTables = {
-  39: [["Arsenal", 8, 6, 1, 1, 17], ["Man City", 8, 5, 2, 1, 17], ["Liverpool", 8, 5, 1, 2, 16],
-       ["Chelsea", 8, 4, 2, 2, 14], ["Spurs", 8, 4, 1, 3, 13], ["Newcastle", 8, 3, 3, 2, 12]],
-  140: [["Real Madrid", 8, 7, 0, 1, 21], ["Barcelona", 8, 6, 1, 1, 19], ["Valencia", 8, 4, 2, 2, 14],
-        ["Sevilla", 8, 3, 2, 3, 11]],
-};
-
-const TABLE_LEAGUES = { 39: "Premier League", 140: "La Liga", 135: "Serie A", 78: "Bundesliga" };
-
-/* =====================================================
-   PART 2: STATE (what the page remembers)
+   PART 1: STATE (what the page remembers)
    ===================================================== */
 const state = {
-  tab: "scores",
+  offset: 0,            // -1 yesterday, 0 today, 1 tomorrow
+  search: "",
   league: "All",
+  liveOnly: false,
   openMatchId: null,
-  tableLeagueId: 39,
-  matches: [],          // the list of matches
-  details: {},          // match id -> { events, stats }, loaded when a match is opened
-  tables: {},           // league id -> table rows
-  demo: false,          // true when we are using demo data
-  lastUpdated: new Date(),
+  matches: [],
+  details: {},          // match id -> { events, stats }
+  loading: true,
+  error: false,
+  lastJson: "",
+  scrollY: 0,
 };
 
 const app = document.getElementById("app");
+const controls = document.getElementById("controls");
+const searchBox = document.getElementById("search");
+const leagueSelect = document.getElementById("league-select");
 
 /* =====================================================
-   PART 3: DATA LAYER - talks to OUR backend (/api/...)
+   PART 2: DATA LAYER (talks to OUR backend)
    ===================================================== */
 async function getJson(url) {
   const r = await fetch(url);
@@ -197,47 +177,50 @@ async function getJson(url) {
   return r.json();
 }
 
-// Gets the match list. If the backend is not ready, switch to demo data.
+// Date text like 2026-10-17 for today + offset days
+function dateFor(offset) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  const p = n => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
 async function refresh() {
+  const offset = state.offset;
   try {
-    state.matches = await getJson("/api/matches");
-    state.demo = false;
+    const data = await getJson("/api/matches?date=" + dateFor(offset));
+    if (offset !== state.offset) return;          // user switched day while we waited
+    state.error = false;
+    state.matches = data;
   } catch (err) {
     console.warn(err);
-    if (state.matches.length === 0) {
-      state.matches = demoMatches;
-      state.demo = true;
-    }
+    if (offset !== state.offset) return;
+    state.error = true;                           // keep the old matches on screen if we have them
   }
-  state.lastUpdated = new Date();
-  render();
-  if (state.openMatchId !== null) loadDetail(state.openMatchId);   // keep the open match fresh
+  state.loading = false;
+  document.getElementById("updated").textContent =
+    "Updated " + new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+
+  const json = JSON.stringify(state.matches);
+  if (json !== state.lastJson || state.error) {   // only redraw when something changed
+    state.lastJson = json;
+    render();
+  }
+  if (state.openMatchId !== null) loadDetail(state.openMatchId);
 }
 
 async function loadDetail(id) {
-  if (state.demo) return;
   try {
     state.details[id] = await getJson("/api/match?id=" + id);
   } catch (err) {
     console.warn(err);
     state.details[id] = { events: [], stats: null };
   }
-  if (state.openMatchId === id && state.tab === "scores") render();
-}
-
-async function loadTable(id) {
-  if (state.demo) { state.tables[id] = demoTables[id] || []; render(); return; }
-  try {
-    state.tables[id] = await getJson("/api/standings?league=" + id);
-  } catch (err) {
-    console.warn(err);
-    state.tables[id] = [];
-  }
-  render();
+  if (state.openMatchId === id) render();
 }
 
 /* =====================================================
-   PART 4: YOUR CODE (written by you)
+   PART 3: YOUR CODE (written by you)
    ===================================================== */
 function liveCount(list) {
   return list.filter(match => match.status === "LIVE").length;
@@ -259,20 +242,43 @@ function updateBadge(list) {
 }
 
 /* =====================================================
-   PART 5: HELPERS + RENDER FUNCTIONS
+   PART 4: HELPERS + RENDER FUNCTIONS
    ===================================================== */
-// Stops team names from being treated as HTML (a basic security habit).
 function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
 function kickoffText(m) {
-  return m.kickoff
-    ? new Date(m.kickoff).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    : m.time;
+  return new Date(m.kickoff).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function liveLabel(m) { return m.short === "HT" ? "HT" : `${m.minute}'`; }
+
+// Apply search + league + live filters
+function visibleMatches() {
+  const q = state.search.trim().toLowerCase();
+  return state.matches.filter(m => {
+    if (state.liveOnly && m.status !== "LIVE") return false;
+    if (state.league !== "All" && m.league !== state.league) return false;
+    if (q && !(`${m.home} ${m.away} ${m.league}`.toLowerCase().includes(q))) return false;
+    return true;
+  });
+}
+
+// Keep the league dropdown in step with today's matches,
+// without resetting it while the person is using it.
+let leagueKey = "";
+function syncLeagueSelect() {
+  const leagues = [...new Set(state.matches.map(m => m.league))];
+  const key = leagues.join("|");
+  if (key === leagueKey) return;
+  leagueKey = key;
+  if (state.league !== "All" && !leagues.includes(state.league)) state.league = "All";
+  leagueSelect.innerHTML =
+    `<option value="All">All leagues</option>` +
+    leagues.map(l => `<option value="${esc(l)}">${esc(l)}</option>`).join("");
+  leagueSelect.value = state.league;
+}
 
 function matchRow(m) {
   const status =
@@ -288,38 +294,33 @@ function matchRow(m) {
     </button>`;
 }
 
-function renderScores() {
-  const list = state.matches;
-  const leagues = ["All", ...new Set(list.map(m => m.league))];
-  const chips = leagues.map(l =>
-    `<button class="chip" data-league="${esc(l)}" aria-pressed="${state.league === l}">${esc(l)}</button>`
-  ).join("");
+function renderList() {
+  if (state.loading) return `<p class="empty">Loading matches…</p>`;
 
-  const visible = state.league === "All" ? list : list.filter(m => m.league === state.league);
+  const notice = state.error
+    ? `<p class="notice">Live scores could not be loaded just now. ${state.matches.length ? "Showing the last update." : "Please try again in a minute."}</p>`
+    : "";
+
   const grouped = {};
-  visible.forEach(m => (grouped[m.league] ||= []).push(m));
+  visibleMatches().forEach(m => (grouped[m.league] ||= []).push(m));
 
   const blocks = Object.entries(grouped).map(([league, ms]) =>
     `<section class="league"><h2>${esc(league)}</h2>${ms.map(matchRow).join("")}</section>`
   ).join("");
 
-  const notice = state.demo
-    ? `<p class="notice">Showing demo data. The live feed is not connected yet.</p>` : "";
+  const emptyText = state.search || state.liveOnly || state.league !== "All"
+    ? "No matches found. Try clearing the search or filters."
+    : "No matches for this day.";
 
-  return `
-    ${notice}
-    <div class="chips">${chips}</div>
-    ${blocks || `<p class="empty">No matches for this league today.</p>`}
-    <p class="updated">Updated ${state.lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p>`;
+  return notice + (blocks || (state.error && !state.matches.length ? "" : `<p class="empty">${emptyText}</p>`));
 }
 
 function eventIcon(t) { return t === "goal" ? "⚽" : t === "yellow" ? "🟨" : t === "red" ? "🟥" : "🔁"; }
 
 function renderMatch(m) {
-  // Demo matches carry their own events/stats. Real ones are loaded into state.details.
   const d = state.details[m.id] || {};
-  const events = m.events !== undefined ? m.events : d.events;
-  const stats = m.stats !== undefined ? m.stats : d.stats;
+  const events = d.events;
+  const stats = d.stats;
 
   const status = m.status === "LIVE" ? liveLabel(m) : m.status === "FT" ? "Full time" : `Kick-off ${kickoffText(m)}`;
 
@@ -327,7 +328,7 @@ function renderMatch(m) {
     : events.length
       ? [...events].reverse().map(e => `
           <div class="event"><span class="min">${e.min}'</span>
-          <span>${eventIcon(e.type)} ${esc(e.player)} <span class="team">(${esc(e.team)})</span></span></div>`).join("")
+          <span>${eventIcon(e.type)} ${esc(e.player || "Unnamed player")} <span class="team">(${esc(e.team)})</span></span></div>`).join("")
       : `<p class="empty">No events yet.</p>`;
 
   const statsHtml = stats === undefined ? `<p class="empty">Loading…</p>`
@@ -337,8 +338,7 @@ function renderMatch(m) {
             <div class="row"><span>${a}</span><span class="label">${esc(label)}</span><span>${b}</span></div>
             <div class="bar"><span style="width:${a + b === 0 ? 50 : (a / (a + b)) * 100}%"></span></div>
           </div>`).join("")
-       : `<p class="empty">${m.status === "NS" ? "Stats appear once the match starts." : "Stats are not available for this match."}</p>`;
-
+      : `<p class="empty">${m.status === "NS" ? "Stats appear once the match starts." : "Stats are not available for this match."}</p>`;
 
   return `
     <button class="back" id="back">‹ All matches</button>
@@ -354,102 +354,81 @@ function renderMatch(m) {
     <div class="card"><h3>Match stats</h3>${statsHtml}</div>`;
 }
 
-function renderTables() {
-  const id = state.tableLeagueId;
-  const chips = Object.entries(TABLE_LEAGUES).map(([lid, name]) =>
-    `<button class="chip" data-tleague="${lid}" aria-pressed="${String(id) === lid}">${name}</button>`).join("");
-
-  const rows = state.tables[id];
-  let body;
-  if (rows === undefined) {
-    body = `<p class="empty">Loading…</p>`;
-  } else if (rows.length === 0) {
-    body = `<p class="empty">No table available for this league.</p>`;
-  } else {
-    body = `<table>
-      <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead>
-      <tbody>${rows.map((r, i) => `
-        <tr class="${i < 4 ? "cl" : ""}">
-          <td>${i + 1}</td><td>${esc(r[0])}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td class="pts">${r[5]}</td>
-        </tr>`).join("")}</tbody></table>`;
-  }
-  return `<div class="chips">${chips}</div><div class="card">${body}</div>`;
-}
-
 /* =====================================================
-   PART 6: DRAW THE PAGE
-   render() only reads the state. It does NOT fetch anything,
-   so clicking around is instant.
+   PART 5: DRAW THE PAGE
    ===================================================== */
 function render() {
-  document.getElementById("tab-scores").setAttribute("aria-current", state.tab === "scores" ? "page" : "false");
-  document.getElementById("tab-tables").setAttribute("aria-current", state.tab === "tables" ? "page" : "false");
-  updateBadge(state.matches);
+  if (state.offset === 0) updateBadge(state.matches);
+  else document.getElementById("live-badge").textContent = "";
 
-  if (state.tab === "tables") { app.innerHTML = renderTables(); return; }
+  syncLeagueSelect();
 
   if (state.openMatchId !== null) {
     const m = state.matches.find(x => x.id === state.openMatchId);
-    if (m) { app.innerHTML = renderMatch(m); return; }
+    if (m) {
+      controls.hidden = true;
+      app.innerHTML = renderMatch(m);
+      return;
+    }
     state.openMatchId = null;
   }
-  app.innerHTML = renderScores();
+  controls.hidden = false;
+  app.innerHTML = renderList();
 }
 
 /* =====================================================
-   PART 7: CLICKS
+   PART 6: CLICKS AND TYPING
    ===================================================== */
 app.addEventListener("click", e => {
   const match = e.target.closest("[data-id]");
-  const chip = e.target.closest("[data-league]");
-  const tchip = e.target.closest("[data-tleague]");
-
   if (match) {
+    state.scrollY = window.scrollY;               // remember where we were in the list
     state.openMatchId = Number(match.dataset.id);
     render();
+    window.scrollTo(0, 0);
     loadDetail(state.openMatchId);
     return;
   }
-  if (chip) { state.league = chip.dataset.league; }
-  else if (tchip) {
-    state.tableLeagueId = Number(tchip.dataset.tleague);
-    if (state.tables[state.tableLeagueId] === undefined) loadTable(state.tableLeagueId);
+  if (e.target.closest("#back")) {
+    state.openMatchId = null;
+    render();
+    window.scrollTo(0, state.scrollY);            // go back to the same spot
   }
-  else if (e.target.closest("#back")) { state.openMatchId = null; }
-  else return;
+});
+
+searchBox.addEventListener("input", () => { state.search = searchBox.value; render(); });
+
+leagueSelect.addEventListener("change", () => { state.league = leagueSelect.value; render(); });
+
+document.getElementById("live-toggle").addEventListener("click", e => {
+  state.liveOnly = !state.liveOnly;
+  e.currentTarget.setAttribute("aria-pressed", String(state.liveOnly));
   render();
 });
 
-document.getElementById("tab-scores").onclick = () => { state.tab = "scores"; state.openMatchId = null; render(); };
-document.getElementById("tab-tables").onclick = () => {
-  state.tab = "tables";
-  if (state.tables[state.tableLeagueId] === undefined) loadTable(state.tableLeagueId);
+document.getElementById("dates").addEventListener("click", e => {
+  const btn = e.target.closest("[data-off]");
+  if (!btn) return;
+  state.offset = Number(btn.dataset.off);
+  document.querySelectorAll("#dates button").forEach(b =>
+    b.setAttribute("aria-pressed", String(b === btn)));
+  state.matches = [];
+  state.lastJson = "";
+  state.loading = true;
   render();
-};
+  refresh();
+});
 
 /* =====================================================
-   PART 8: LIVE UPDATES
-   Real mode: ask the backend again every 30 seconds.
-   Demo mode: fake a ticking clock so the page still feels live.
+   PART 7: LIVE UPDATES
+   Ask the backend again every 30 seconds (today only).
+   The backend caches, so many visitors share the same API call.
    ===================================================== */
-function simulateTick() {
-  state.matches.filter(m => m.status === "LIVE").forEach(m => {
-    m.minute += 1;
-    if (Math.random() < 0.04) {
-      const homeScores = Math.random() < 0.5;
-      homeScores ? m.hs++ : m.as++;
-      m.events.push({ min: m.minute, type: "goal", team: homeScores ? m.home : m.away, player: "New goal" });
-    }
-    if (m.minute >= 90) m.status = "FT";
-  });
-  state.lastUpdated = new Date();
-  render();
-}
-
-refresh().then(() => {
-  if (state.demo) setInterval(simulateTick, 4000);
-  else setInterval(refresh, 30000);
-});
+refresh();
+setInterval(() => {
+  if (state.offset === 0 && !document.hidden) refresh();
+}, 30000);
 </script>
+
 </body>
 </html>
