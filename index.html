@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matchday – Live Football Scores</title>
+<style>
+  :root {
+    --chalk: #F3F5EF;
+    --paper: #FFFFFF;
+    --ink: #17212B;
+    --muted: #6B7780;
+    --line: #DDE3D8;
+    --pitch: #1D6B43;
+    --live: #D7263D;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --chalk: #101814;
+      --paper: #17221C;
+      --ink: #EAF0EA;
+      --muted: #93A39A;
+      --line: #263329;
+      --pitch: #4CB57F;
+      --live: #FF5A6E;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+    background: var(--chalk);
+    color: var(--ink);
+    line-height: 1.4;
+    padding-bottom: 72px;
+  }
+  button { font: inherit; color: inherit; cursor: pointer; background: none; border: 0; }
+  button:focus-visible { outline: 2px solid var(--pitch); outline-offset: 2px; }
+
+  header {
+    background: var(--pitch);
+    color: #fff;
+    padding: 18px 16px 14px;
+    background-image: radial-gradient(circle at 100% 0, transparent 46px, rgba(255,255,255,.35) 47px, rgba(255,255,255,.35) 49px, transparent 50px);
+  }
+  header h1 { font-size: 1.5rem; letter-spacing: -0.02em; }
+  header p { font-size: .85rem; opacity: .85; }
+  #live-badge { margin-top: 4px; font-weight: 700; opacity: 1; }
+
+  main { max-width: 640px; margin: 0 auto; padding: 12px; }
+
+  .notice { background: var(--paper); border: 1px dashed var(--line); border-radius: 8px; padding: 8px 12px; font-size: .8rem; color: var(--muted); margin-bottom: 10px; }
+
+  .chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 0 12px; }
+  .chip {
+    white-space: nowrap; padding: 7px 14px; border-radius: 999px;
+    border: 1px solid var(--line); background: var(--paper); font-size: .85rem;
+  }
+  .chip[aria-pressed="true"] { background: var(--ink); color: var(--chalk); border-color: var(--ink); }
+
+  .league { margin-bottom: 18px; }
+  .league h2 { font-size: .95rem; margin: 0 4px 6px; color: var(--muted); font-weight: 600; }
+
+  .match {
+    display: grid; grid-template-columns: 54px 1fr 28px; gap: 8px; align-items: center;
+    width: 100%; text-align: left; background: var(--paper);
+    padding: 12px; border-bottom: 1px solid var(--line);
+  }
+  .match:first-of-type { border-radius: 10px 10px 0 0; }
+  .match:last-of-type { border-radius: 0 0 10px 10px; border-bottom: 0; }
+  .match:only-of-type { border-radius: 10px; }
+  .status { font-size: .8rem; font-weight: 700; color: var(--muted); }
+  .status.live { color: var(--live); }
+  .status.live::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--live); margin-right: 5px; animation: pulse 1.4s infinite; }
+  @keyframes pulse { 50% { opacity: .25; } }
+  @media (prefers-reduced-motion: reduce) { .status.live::before { animation: none; } }
+  .teams div { padding: 2px 0; }
+  .score div { font-variant-numeric: tabular-nums; font-weight: 800; text-align: right; padding: 2px 0; }
+
+  .back { padding: 8px 4px; color: var(--pitch); font-weight: 600; }
+  .card { background: var(--paper); border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  .scoreboard { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; text-align: center; }
+  .scoreboard .big { font-size: 2.4rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .scoreboard .tname { font-weight: 700; }
+  .card h3 { font-size: .95rem; margin-bottom: 10px; }
+
+  .event { display: grid; grid-template-columns: 40px 1fr; padding: 8px 0; border-bottom: 1px solid var(--line); gap: 8px; }
+  .event:last-child { border-bottom: 0; }
+  .event .min { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .event .team { color: var(--muted); }
+
+  .stat { margin: 12px 0; }
+  .stat .row { display: flex; justify-content: space-between; font-size: .85rem; font-weight: 600; }
+  .stat .label { color: var(--muted); font-weight: 400; }
+  .bar { display: flex; height: 6px; border-radius: 3px; overflow: hidden; background: var(--line); margin-top: 4px; }
+  .bar span { background: var(--pitch); }
+
+  table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  th, td { padding: 8px 4px; text-align: center; font-variant-numeric: tabular-nums; }
+  th { color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--line); }
+  td:nth-child(2), th:nth-child(2) { text-align: left; }
+  tr.cl td:first-child { box-shadow: inset 3px 0 0 var(--pitch); }
+  td.pts { font-weight: 800; }
+
+  .empty { text-align: center; color: var(--muted); padding: 40px 12px; }
+
+  nav {
+    position: fixed; bottom: 0; left: 0; right: 0; display: flex;
+    background: var(--paper); border-top: 1px solid var(--line);
+  }
+  nav button { flex: 1; padding: 16px 0; font-weight: 600; color: var(--muted); }
+  nav button[aria-current="page"] { color: var(--pitch); box-shadow: inset 0 3px 0 var(--pitch); }
+  .updated { text-align: center; color: var(--muted); font-size: .75rem; padding: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Matchday</h1>
+  <p>Live scores, fixtures and tables</p>
+  <p id="live-badge"></p>
+</header>
+
+<main id="app"></main>
+
+<nav>
+  <button id="tab-scores" aria-current="page">Scores</button>
+  <button id="tab-tables">Tables</button>
+</nav>
+
+<script>
+/* =====================================================
+   PART 1: DEMO DATA
+   Used ONLY when the backend is not available yet (for example
+   before the API key is added). Same shape as the real data.
+   ===================================================== */
+const demoMatches = [
+  { id: 1, league: "Premier League", home: "Arsenal", away: "Chelsea", hs: 2, as: 1, status: "LIVE", minute: 67,
+    events: [
+      { min: 12, type: "goal", team: "Arsenal", player: "B. Saka" },
+      { min: 34, type: "goal", team: "Chelsea", player: "C. Palmer" },
+      { min: 41, type: "yellow", team: "Chelsea", player: "M. Caicedo" },
+      { min: 58, type: "goal", team: "Arsenal", player: "K. Havertz" },
+    ],
+    stats: { Possession: [58, 42], Shots: [11, 7], "Shots on target": [5, 3], Corners: [6, 2] } },
+  { id: 2, league: "Premier League", home: "Liverpool", away: "Man City", hs: 0, as: 0, status: "LIVE", minute: 23,
+    events: [ { min: 19, type: "yellow", team: "Man City", player: "Rodri" } ],
+    stats: { Possession: [47, 53], Shots: [3, 4], "Shots on target": [1, 1], Corners: [2, 3] } },
+  { id: 3, league: "Premier League", home: "Spurs", away: "Newcastle", hs: 0, as: 0, status: "NS", time: "20:00",
+    events: [], stats: null },
+  { id: 4, league: "La Liga", home: "Real Madrid", away: "Sevilla", hs: 3, as: 1, status: "FT",
+    events: [
+      { min: 9, type: "goal", team: "Real Madrid", player: "Vinícius Jr." },
+      { min: 27, type: "goal", team: "Sevilla", player: "Y. En-Nesyri" },
+      { min: 55, type: "goal", team: "Real Madrid", player: "J. Bellingham" },
+      { min: 82, type: "goal", team: "Real Madrid", player: "Rodrygo" },
+    ],
+    stats: { Possession: [64, 36], Shots: [16, 6], "Shots on target": [8, 2], Corners: [7, 3] } },
+  { id: 5, league: "La Liga", home: "Barcelona", away: "Valencia", hs: 0, as: 0, status: "NS", time: "21:00",
+    events: [], stats: null },
+];
+
+const demoTables = {
+  39: [["Arsenal", 8, 6, 1, 1, 17], ["Man City", 8, 5, 2, 1, 17], ["Liverpool", 8, 5, 1, 2, 16],
+       ["Chelsea", 8, 4, 2, 2, 14], ["Spurs", 8, 4, 1, 3, 13], ["Newcastle", 8, 3, 3, 2, 12]],
+  140: [["Real Madrid", 8, 7, 0, 1, 21], ["Barcelona", 8, 6, 1, 1, 19], ["Valencia", 8, 4, 2, 2, 14],
+        ["Sevilla", 8, 3, 2, 3, 11]],
+};
+
+const TABLE_LEAGUES = { 39: "Premier League", 140: "La Liga", 135: "Serie A", 78: "Bundesliga" };
+
+/* =====================================================
+   PART 2: STATE (what the page remembers)
+   ===================================================== */
+const state = {
+  tab: "scores",
+  league: "All",
+  openMatchId: null,
+  tableLeagueId: 39,
+  matches: [],          // the list of matches
+  details: {},          // match id -> { events, stats }, loaded when a match is opened
+  tables: {},           // league id -> table rows
+  demo: false,          // true when we are using demo data
+  lastUpdated: new Date(),
+};
+
+const app = document.getElementById("app");
+
+/* =====================================================
+   PART 3: DATA LAYER - talks to OUR backend (/api/...)
+   ===================================================== */
+async function getJson(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(url + " failed: " + r.status);
+  return r.json();
+}
+
+// Gets the match list. If the backend is not ready, switch to demo data.
+async function refresh() {
+  try {
+    state.matches = await getJson("/api/matches");
+    state.demo = false;
+  } catch (err) {
+    console.warn(err);
+    if (state.matches.length === 0) {
+      state.matches = demoMatches;
+      state.demo = true;
+    }
+  }
+  state.lastUpdated = new Date();
+  render();
+  if (state.openMatchId !== null) loadDetail(state.openMatchId);   // keep the open match fresh
+}
+
+async function loadDetail(id) {
+  if (state.demo) return;
+  try {
+    state.details[id] = await getJson("/api/match?id=" + id);
+  } catch (err) {
+    console.warn(err);
+    state.details[id] = { events: [], stats: null };
+  }
+  if (state.openMatchId === id && state.tab === "scores") render();
+}
+
+async function loadTable(id) {
+  if (state.demo) { state.tables[id] = demoTables[id] || []; render(); return; }
+  try {
+    state.tables[id] = await getJson("/api/standings?league=" + id);
+  } catch (err) {
+    console.warn(err);
+    state.tables[id] = [];
+  }
+  render();
+}
+
+/* =====================================================
+   PART 4: YOUR CODE (written by you)
+   ===================================================== */
+function liveCount(list) {
+  return list.filter(match => match.status === "LIVE").length;
+}
+
+function updateBadge(list) {
+  const count = liveCount(list);
+  let text = "";
+
+  if (count === 0) {
+    text = "No matches live";
+  } else if (count === 1) {
+    text = "1 match live now";
+  } else {
+    text = `${count} matches live now`;
+  }
+
+  document.getElementById("live-badge").textContent = text;
+}
+
+/* =====================================================
+   PART 5: HELPERS + RENDER FUNCTIONS
+   ===================================================== */
+// Stops team names from being treated as HTML (a basic security habit).
+function esc(s) {
+  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function kickoffText(m) {
+  return m.kickoff
+    ? new Date(m.kickoff).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    : m.time;
+}
+
+function liveLabel(m) { return m.short === "HT" ? "HT" : `${m.minute}'`; }
+
+function matchRow(m) {
+  const status =
+    m.status === "LIVE" ? `<span class="status live">${liveLabel(m)}</span>` :
+    m.status === "FT"   ? `<span class="status">FT</span>` :
+                          `<span class="status">${kickoffText(m)}</span>`;
+  const showScore = m.status !== "NS";
+  return `
+    <button class="match" data-id="${m.id}">
+      ${status}
+      <div class="teams"><div>${esc(m.home)}</div><div>${esc(m.away)}</div></div>
+      <div class="score">${showScore ? `<div>${m.hs}</div><div>${m.as}</div>` : ""}</div>
+    </button>`;
+}
+
+function renderScores() {
+  const list = state.matches;
+  const leagues = ["All", ...new Set(list.map(m => m.league))];
+  const chips = leagues.map(l =>
+    `<button class="chip" data-league="${esc(l)}" aria-pressed="${state.league === l}">${esc(l)}</button>`
+  ).join("");
+
+  const visible = state.league === "All" ? list : list.filter(m => m.league === state.league);
+  const grouped = {};
+  visible.forEach(m => (grouped[m.league] ||= []).push(m));
+
+  const blocks = Object.entries(grouped).map(([league, ms]) =>
+    `<section class="league"><h2>${esc(league)}</h2>${ms.map(matchRow).join("")}</section>`
+  ).join("");
+
+  const notice = state.demo
+    ? `<p class="notice">Showing demo data. The live feed is not connected yet.</p>` : "";
+
+  return `
+    ${notice}
+    <div class="chips">${chips}</div>
+    ${blocks || `<p class="empty">No matches for this league today.</p>`}
+    <p class="updated">Updated ${state.lastUpdated.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })}</p>`;
+}
+
+function eventIcon(t) { return t === "goal" ? "⚽" : t === "yellow" ? "🟨" : t === "red" ? "🟥" : "🔁"; }
+
+function renderMatch(m) {
+  // Demo matches carry their own events/stats. Real ones are loaded into state.details.
+  const d = state.details[m.id] || {};
+  const events = m.events !== undefined ? m.events : d.events;
+  const stats = m.stats !== undefined ? m.stats : d.stats;
+
+  const status = m.status === "LIVE" ? liveLabel(m) : m.status === "FT" ? "Full time" : `Kick-off ${kickoffText(m)}`;
+
+  const eventsHtml = events === undefined ? `<p class="empty">Loading…</p>`
+    : events.length
+      ? [...events].reverse().map(e => `
+          <div class="event"><span class="min">${e.min}'</span>
+          <span>${eventIcon(e.type)} ${esc(e.player)} <span class="team">(${esc(e.team)})</span></span></div>`).join("")
+      : `<p class="empty">No events yet.</p>`;
+
+  const statsHtml = stats === undefined ? `<p class="empty">Loading…</p>`
+    : stats
+      ? Object.entries(stats).map(([label, [a, b]]) => `
+          <div class="stat">
+            <div class="row"><span>${a}</span><span class="label">${esc(label)}</span><span>${b}</span></div>
+            <div class="bar"><span style="width:${a + b === 0 ? 50 : (a / (a + b)) * 100}%"></span></div>
+          </div>`).join("")
+      : `<p class="empty">Stats appear once the match starts.</p>`;
+
+  return `
+    <button class="back" id="back">‹ All matches</button>
+    <div class="card">
+      <div class="scoreboard">
+        <div class="tname">${esc(m.home)}</div>
+        <div><div class="big">${m.status === "NS" ? "–" : `${m.hs} : ${m.as}`}</div>
+        <div class="status ${m.status === "LIVE" ? "live" : ""}">${status}</div></div>
+        <div class="tname">${esc(m.away)}</div>
+      </div>
+    </div>
+    <div class="card"><h3>Match events</h3>${eventsHtml}</div>
+    <div class="card"><h3>Match stats</h3>${statsHtml}</div>`;
+}
+
+function renderTables() {
+  const id = state.tableLeagueId;
+  const chips = Object.entries(TABLE_LEAGUES).map(([lid, name]) =>
+    `<button class="chip" data-tleague="${lid}" aria-pressed="${String(id) === lid}">${name}</button>`).join("");
+
+  const rows = state.tables[id];
+  let body;
+  if (rows === undefined) {
+    body = `<p class="empty">Loading…</p>`;
+  } else if (rows.length === 0) {
+    body = `<p class="empty">No table available for this league.</p>`;
+  } else {
+    body = `<table>
+      <thead><tr><th>#</th><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>Pts</th></tr></thead>
+      <tbody>${rows.map((r, i) => `
+        <tr class="${i < 4 ? "cl" : ""}">
+          <td>${i + 1}</td><td>${esc(r[0])}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td class="pts">${r[5]}</td>
+        </tr>`).join("")}</tbody></table>`;
+  }
+  return `<div class="chips">${chips}</div><div class="card">${body}</div>`;
+}
+
+/* =====================================================
+   PART 6: DRAW THE PAGE
+   render() only reads the state. It does NOT fetch anything,
+   so clicking around is instant.
+   ===================================================== */
+function render() {
+  document.getElementById("tab-scores").setAttribute("aria-current", state.tab === "scores" ? "page" : "false");
+  document.getElementById("tab-tables").setAttribute("aria-current", state.tab === "tables" ? "page" : "false");
+  updateBadge(state.matches);
+
+  if (state.tab === "tables") { app.innerHTML = renderTables(); return; }
+
+  if (state.openMatchId !== null) {
+    const m = state.matches.find(x => x.id === state.openMatchId);
+    if (m) { app.innerHTML = renderMatch(m); return; }
+    state.openMatchId = null;
+  }
+  app.innerHTML = renderScores();
+}
+
+/* =====================================================
+   PART 7: CLICKS
+   ===================================================== */
+app.addEventListener("click", e => {
+  const match = e.target.closest("[data-id]");
+  const chip = e.target.closest("[data-league]");
+  const tchip = e.target.closest("[data-tleague]");
+
+  if (match) {
+    state.openMatchId = Number(match.dataset.id);
+    render();
+    loadDetail(state.openMatchId);
+    return;
+  }
+  if (chip) { state.league = chip.dataset.league; }
+  else if (tchip) {
+    state.tableLeagueId = Number(tchip.dataset.tleague);
+    if (state.tables[state.tableLeagueId] === undefined) loadTable(state.tableLeagueId);
+  }
+  else if (e.target.closest("#back")) { state.openMatchId = null; }
+  else return;
+  render();
+});
+
+document.getElementById("tab-scores").onclick = () => { state.tab = "scores"; state.openMatchId = null; render(); };
+document.getElementById("tab-tables").onclick = () => {
+  state.tab = "tables";
+  if (state.tables[state.tableLeagueId] === undefined) loadTable(state.tableLeagueId);
+  render();
+};
+
+/* =====================================================
+   PART 8: LIVE UPDATES
+   Real mode: ask the backend again every 30 seconds.
+   Demo mode: fake a ticking clock so the page still feels live.
+   ===================================================== */
+function simulateTick() {
+  state.matches.filter(m => m.status === "LIVE").forEach(m => {
+    m.minute += 1;
+    if (Math.random() < 0.04) {
+      const homeScores = Math.random() < 0.5;
+      homeScores ? m.hs++ : m.as++;
+      m.events.push({ min: m.minute, type: "goal", team: homeScores ? m.home : m.away, player: "New goal" });
+    }
+    if (m.minute >= 90) m.status = "FT";
+  });
+  state.lastUpdated = new Date();
+  render();
+}
+
+refresh().then(() => {
+  if (state.demo) setInterval(simulateTick, 4000);
+  else setInterval(refresh, 30000);
+});
+</script>
+</body>
+</html>
